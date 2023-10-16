@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:odometer/src/odometer_animation.dart';
 import 'package:odometer/src/odometer_number.dart';
 
@@ -46,6 +46,7 @@ class AnimatedSlideOdometerNumber extends StatelessWidget {
       transitionIn: (value, place, animation) => _buildSlideOdometerDigit(
         value,
         place,
+        odometerNumber.number,
         animation,
         verticalOffset * animation - verticalOffset,
         groupSeparator,
@@ -55,6 +56,7 @@ class AnimatedSlideOdometerNumber extends StatelessWidget {
       transitionOut: (value, place, animation) => _buildSlideOdometerDigit(
         value,
         place,
+        odometerNumber.number,
         1 - animation,
         verticalOffset * animation,
         groupSeparator,
@@ -103,6 +105,7 @@ class SlideOdometerTransition extends StatelessWidget {
       transitionIn: (value, place, animation) => _buildSlideOdometerDigit(
         value,
         place,
+        0,
         animation,
         verticalOffset * animation - verticalOffset,
         groupSeparator,
@@ -112,6 +115,7 @@ class SlideOdometerTransition extends StatelessWidget {
       transitionOut: (value, place, animation) => _buildSlideOdometerDigit(
         value,
         place,
+        0,
         1 - animation,
         verticalOffset * animation,
         groupSeparator,
@@ -125,6 +129,7 @@ class SlideOdometerTransition extends StatelessWidget {
 Widget _buildSlideOdometerDigit(
   int value,
   int place,
+  int length,
   double opacity,
   double offsetY,
   Widget? groupSeparator,
@@ -135,17 +140,19 @@ Widget _buildSlideOdometerDigit(
   if (groupSeparator != null && (d != 0 && d % 3 == 0)) {
     return Row(
       children: [
-        _valueText(value, opacity, offsetY, numberTextStyle, letterWidth),
+        _valueText(value, place, length, opacity, offsetY, numberTextStyle, letterWidth),
         groupSeparator,
       ],
     );
   } else {
-    return _valueText(value, opacity, offsetY, numberTextStyle, letterWidth);
+    return _valueText(value, place, length, opacity, offsetY, numberTextStyle, letterWidth);
   }
 }
 
 Widget _valueText(
   int value,
+  int place,
+  int length,
   double opacity,
   double offsetY,
   TextStyle? numberTextStyle,
@@ -154,7 +161,7 @@ Widget _valueText(
     Transform.translate(
       offset: Offset(0, offsetY),
       child: Opacity(
-        opacity: opacity,
+        opacity: length == 0 ? opacity : (place > length.toString().length && value == 0) ? 0 : opacity,
         child: SizedBox(
           width: letterWidth,
           child: Text(
